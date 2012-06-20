@@ -38,3 +38,4 @@
 /src/epam
 /ebin
 /priv/lib
+/c_src/*.o
