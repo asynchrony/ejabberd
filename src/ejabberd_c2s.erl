@@ -630,6 +630,12 @@ wait_for_feature_request({xmlstreamelement, El}, StateData) ->
 		    AuthModule = xml:get_attr_s(auth_module, Props),
 		    ?INFO_MSG("(~w) Accepted authentication for ~s by ~p",
 			      [StateData#state.socket, U, AuthModule]),
+		    ejabberd_hooks:run(user_auth_success,
+				       StateData#state.server, [
+					       StateData#state.server,
+					       U,
+					       StateData#state.ip
+				         ]),
 		    fsm_next_state(wait_for_stream,
 				   StateData#state{
 				     streamid = new_id(),
@@ -654,6 +660,12 @@ wait_for_feature_request({xmlstreamelement, El}, StateData) ->
 				 {xmlelement, "failure",
 				  [{"xmlns", ?NS_SASL}],
 				  [{xmlelement, Error, [], []}]}),
+		    ejabberd_hooks:run(user_auth_failed,
+				       StateData#state.server, [
+					       StateData#state.server,
+					       Username,
+					       StateData#state.ip
+				         ]),
 		    {next_state, wait_for_feature_request, StateData,
 		     ?C2S_OPEN_TIMEOUT};
 		{error, Error} ->
