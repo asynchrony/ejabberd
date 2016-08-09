@@ -96,7 +96,7 @@ init({SockMod, Socket}, Opts) ->
 	if
 	    TLSEnabled ->
 		inet:setopts(Socket, [{recbuf, 8192}]),
-		{ok, TLSSocket} = tls:tcp_to_tls(Socket, TLSOpts),
+		{ok, TLSSocket} = ejabberd_tls:tcp_to_tls(Socket, TLSOpts),
 		{tls, TLSSocket};
 	    true ->
 		{SockMod, Socket}

@@ -176,14 +176,14 @@ init([Module, SockMod, Socket, Opts, Receiver]) ->
 %% Description: Handling call messages
 %%--------------------------------------------------------------------
 handle_call({starttls, TLSOpts}, _From, State) ->
-    {ok, TLSSocket} = tls:tcp_to_tls(State#state.socket, TLSOpts),
+    {ok, TLSSocket} = ejabberd_tls:tcp_to_tls(State#state.socket, TLSOpts),
     ejabberd_receiver:starttls(State#state.receiver, TLSSocket),
     Reply = ok,
     {reply, Reply, State#state{socket = TLSSocket, sockmod = tls},
      ?HIBERNATE_TIMEOUT};
 
 handle_call({starttls, TLSOpts, Data}, _From, State) ->
-    {ok, TLSSocket} = tls:tcp_to_tls(State#state.socket, TLSOpts),
+    {ok, TLSSocket} = ejabberd_tls:tcp_to_tls(State#state.socket, TLSOpts),
     ejabberd_receiver:starttls(State#state.receiver, TLSSocket),
     catch (State#state.sockmod):send(
 	    State#state.socket, Data),
@@ -232,11 +232,11 @@ handle_call(get_sockmod, _From, State) ->
     {reply, Reply, State, ?HIBERNATE_TIMEOUT};
 
 handle_call(get_peer_certificate, _From, State) ->
-    Reply = tls:get_peer_certificate(State#state.socket),
+    Reply = ejabberd_tls:get_peer_certificate(State#state.socket),
     {reply, Reply, State, ?HIBERNATE_TIMEOUT};
 
 handle_call(get_verify_result, _From, State) ->
-    Reply = tls:get_verify_result(State#state.socket),
+    Reply = ejabberd_tls:get_verify_result(State#state.socket),
     {reply, Reply, State, ?HIBERNATE_TIMEOUT};
 
 handle_call(close, _From, State) ->
@@ -318,7 +318,7 @@ check_starttls(SockMod, Socket, Receiver, Opts) ->
 			   end, Opts),
     if
 	TLSEnabled ->
-	    {ok, TLSSocket} = tls:tcp_to_tls(Socket, TLSOpts),
+	    {ok, TLSSocket} = ejabberd_tls:tcp_to_tls(Socket, TLSOpts),
 	    ejabberd_receiver:starttls(Receiver, TLSSocket),
 	    {tls, TLSSocket};
 	true ->

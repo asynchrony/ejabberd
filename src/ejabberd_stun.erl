@@ -142,11 +142,11 @@ handle_info({tcp, Sock, TLSData}, wait_for_tls, State) ->
 	     update_state(State#state{buf = Buf})};
 	<<_:16, 1, _/binary>> ->
 	    TLSOpts = [{certfile, State#state.certfile}],
-	    {ok, TLSSock} = tls:tcp_to_tls(Sock, TLSOpts),
+	    {ok, TLSSock} = ejabberd_tls:tcp_to_tls(Sock, TLSOpts),
 	    NewState = State#state{sock = TLSSock,
 				   buf = <<>>,
 				   sock_mod = tls},
-	    case tls:recv_data(TLSSock, Buf) of
+	    case ejabberd_tls:recv_data(TLSSock, Buf) of
 		{ok, Data} ->
 		    process_data(session_established, NewState, Data);
 		_Err ->
@@ -157,7 +157,7 @@ handle_info({tcp, Sock, TLSData}, wait_for_tls, State) ->
     end;
 handle_info({tcp, _Sock, TLSData}, StateName,
 	    #state{sock_mod = tls} = State) ->
-    case tls:recv_data(State#state.sock, TLSData) of
+    case ejabberd_tls:recv_data(State#state.sock, TLSData) of
 	{ok, Data} ->
 	    process_data(StateName, State, Data);
 	_Err ->

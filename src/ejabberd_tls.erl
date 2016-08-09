@@ -24,7 +24,7 @@
 %%%
 %%%----------------------------------------------------------------------
 
--module(tls).
+-module(ejabberd_tls).
 -author('alexey@process-one.net').
 
 -behaviour(gen_server).
